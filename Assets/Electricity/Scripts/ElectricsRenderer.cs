@@ -29,34 +29,32 @@ namespace Electricity
         /// <summary>
         /// 在带点体周围生成电场线渲染器
         /// </summary>
-        /// <param name="eletrics">所有的电荷</param>
-        /// <param name="startDistance">起始绘制点和电荷的距离</param>
-        /// <param name="minDistance">绘制点和电荷的最短距离</param>
-        /// <param name="maxDistance">绘制点和电荷的最大距离</param>
-        /// <param name="times">单个电荷生成的电场线根数</param>
-        /// <param name="delta">步进长度</param>
-        public void CreateFieldLineRendersAroundPoints(IElectric[] eletrics, float startDistance,float minDistance,float maxDistance, int times, float delta)
+        /// <param name="eletrics">带电体</param>
+        /// <param name="distance">起点与带电体的距离</param>
+        /// <param name="times">从带电体向外延伸的电场线数目</param>
+        /// <param name="delta">步进距离</param>
+        /// <param name="max_Intensity">场强大小上限</param>
+        /// <param name="min_Intensity">场强大小下限</param>
+        public void CreateFieldLineRendersAroundPoints(IElectric[] eletrics, float distance, int times, float delta, float max_Intensity, float min_Intensity)
         {
-            var ele_transList = new List<Transform>();
             foreach (var e in eletrics)
             {
-                ele_transList.Add(e.transform);
                 var start_List = new List<Vector3>();
-                start_List.Add(e.Position + Vector3.up * startDistance);
-                start_List.Add(e.Position - Vector3.up * startDistance);
+                start_List.Add(e.Position + Vector3.up * distance);
+                start_List.Add(e.Position - Vector3.up * distance);
                 for (int i = -times / 4 + 1; i < times / 4; i++)
                 {
                     var u = ((float)i) / times * 360f;
                     for (int j = 0; j < times; j++)
                     {
                         var v = ((float)j) / times * 360f;
-                        start_List.Add(e.Position + Quaternion.Euler(u, v, 0) * Vector3.forward * startDistance);
+                        start_List.Add(e.Position + Quaternion.Euler(u, v, 0) * Vector3.forward * distance);
                     }
                 }
                 for (int i = 0; i < start_List.Count; i++)
                 {
                     m_fieldRenderer_List.Add(CreateFieldLineRender(start_List[i], e.transform, delta,
-                         /*max_Intensity, min_Intensity,*/minDistance,maxDistance,e, ele_transList));
+                         max_Intensity, min_Intensity));
                 }
             }
         }
@@ -95,7 +93,8 @@ namespace Electricity
         /// 渲染场线
         /// </summary>
         /// <param name="i_func">计算电场强度的委托</param>
-        public void RenderFieldLines(IntensityFunction i_func)
+        /// <param name="p_func">计算电场势能的委托</param>
+        public void RenderFieldLines(IntensityFunction i_func, PotentialFunction p_func)
         {
             foreach (var item in m_fieldRenderer_List)
             {
@@ -103,23 +102,33 @@ namespace Electricity
                 {
 
                 }
-                item.RenderLine(i_func);
+                item.RenderLine(i_func, p_func);
             }
+            //for (int i = 0; i < m_fieldRenderer_List.Count; i++)
+            //{
+            //    if (m_fieldRenderer_List[i] == null)
+            //    {
+            //        m_fieldRenderer_List.Remove(m_fieldRenderer_List[i]);
+            //        i--;
+            //        continue;
+            //    }
+            //    m_fieldRenderer_List[i].RenderLine(i_func,p_func);
+            //}
         }
 
-       /// <summary>
-       /// 生产单根电场线绘制器
-       /// </summary>
-       /// <param name="startPoint">起点</param>
-       /// <param name="parent">父物体</param>
-       /// <param name="delta">步进值</param>
-       /// <param name="minDistance">最小距离</param>
-       /// <param name="maxDistance">最大距离</param>
-       /// <param name="genertateElectic">生成该电场线的点电荷</param>
-       /// <param name="electricsList">所有的点电荷</param>
-       /// <returns></returns>
+     
+
+        /// <summary>
+        /// 生成电场线渲染器
+        /// </summary>
+        /// <param name="startPoint">起点</param>
+        /// <param name="parent">父物体</param>
+        /// <param name="delta">步进距离</param>
+        /// <param name="max_Intensity">场强最大值</param>
+        /// <param name="min_intensity">场强最小值</param>
+        /// <returns></returns>
         private IFieldLineRenderer CreateFieldLineRender(Vector3 startPoint, Transform parent, float delta,
-           float minDistance,float maxDistance,IElectric genertateElectic, List<Transform> electricsList)
+            float max_Intensity, float min_intensity)
         {
             var obj = Resources.Load<GameObject>(FL_RENDERER_PATH);
             if (obj == null)
@@ -128,13 +137,8 @@ namespace Electricity
             }
             var renderer = Instantiate(obj, startPoint, Quaternion.identity, parent).GetComponent<IFieldLineRenderer>();
             renderer.SetDelta(delta);
-            //renderer.SetMaximumIntensity(max_Intensity);
-            //renderer.SetMinimumIntensity(min_intensity);
-            renderer.SetMinDistance(minDistance);
-            renderer.SetMaxDistance(maxDistance);
-            renderer.SetGenertateElectric(genertateElectic.transform);
-            renderer.SetSign( Mathf.Sign(genertateElectic.Quantity));
-            renderer.SetElectricsList(electricsList);
+            renderer.SetMaximumIntensity(max_Intensity);
+            renderer.SetMinimumIntensity(min_intensity);
             return renderer;
         }
     }

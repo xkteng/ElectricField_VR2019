@@ -19,11 +19,9 @@ namespace VR2019
         private Transform m_platesSpawn;
         [SerializeField]
         private Transform m_roundplatesSpawn;
-        [SerializeField]
-        private Transform m_newPlateSpawn;
 
         private GameObject m_plates = null;
-
+        private GameObject m_rplates = null;
 
         private Manager() { }
         private static Manager s_instance = null;
@@ -52,40 +50,9 @@ namespace VR2019
         }
         private void LoadRoundPlates()
         {
-            m_plates = m_gameObjectLoader.LoadGameObject("RoundPlates", m_roundplatesSpawn.position, m_roundplatesSpawn.rotation, m_roundplatesSpawn);
+            m_rplates = m_gameObjectLoader.LoadGameObject("RoundPlates", m_roundplatesSpawn.position, m_roundplatesSpawn.rotation, m_roundplatesSpawn);
             m_electricityManager.Reset();
         }
-        private void LoadPlatesOneVSTwo()
-        {
-            m_plates = m_gameObjectLoader.LoadGameObject("PlatesOneVSTwo", m_platesSpawn.position, m_platesSpawn.rotation, m_platesSpawn);
-            m_electricityManager.Reset();
-        }
-        private void LoadRoundPlatesOneVSTwo()
-        {
-            m_plates = m_gameObjectLoader.LoadGameObject("RoundPlatesOneVSTwo", m_roundplatesSpawn.position, m_roundplatesSpawn.rotation, m_roundplatesSpawn);
-            m_electricityManager.Reset();
-        }
-        private void LoadPositivePlate()
-        {
-            m_plates = m_gameObjectLoader.LoadGameObject("PositivePlate", m_newPlateSpawn.position, m_newPlateSpawn.rotation, m_newPlateSpawn);
-            m_electricityManager.Reset();
-        }
-        private void LoadNegativePlate()
-        {
-            m_plates = m_gameObjectLoader.LoadGameObject("NegativePlate", m_newPlateSpawn.position, m_newPlateSpawn.rotation, m_newPlateSpawn);
-            m_electricityManager.Reset();
-        }
-        private void LoadPositiveRoundPlate()
-        {
-            m_plates = m_gameObjectLoader.LoadGameObject("PositiveRoundPlate", m_newPlateSpawn.position, m_newPlateSpawn.rotation, m_newPlateSpawn);
-            m_electricityManager.Reset();
-        }
-        private void LoadNegativeRoundPlate()
-        {
-            m_plates = m_gameObjectLoader.LoadGameObject("NegativeRoundPlate", m_newPlateSpawn.position, m_newPlateSpawn.rotation, m_newPlateSpawn);
-            m_electricityManager.Reset();
-        }
-
         private void UnloadPlates()
         {
             if (m_plates)
@@ -93,7 +60,13 @@ namespace VR2019
                 DestroyImmediate(m_plates);
             }
         }
-
+        private void UnloadRoundPlates()
+        {
+            if (m_rplates)
+            {
+                DestroyImmediate(m_rplates);
+            }
+        }
         [Button("RefreshPlates")]
         public void RefreshPlates()
         {
@@ -103,32 +76,16 @@ namespace VR2019
         public void ResetPlates()
         {
             UnloadPlates();
+            UnloadRoundPlates();
             LoadPlates();
         }
         [Button("SetRoundPlates")]
         public void ResetRoundPlates()
         {
             UnloadPlates();
+            UnloadRoundPlates();
             LoadRoundPlates();
         }
-        [Button("SquarePlates1vs2")]
-        public void ResetPlatesOneVSTwo()
-        {
-            UnloadPlates();
-            LoadPlatesOneVSTwo();
-        }
-        [Button("RoundPlates1vs2")]
-        public void ResetRoundPlatesOneVSTwo()
-        {
-            UnloadPlates();
-            LoadRoundPlatesOneVSTwo();
-        }
-        [Button("AddPositivePlate")]
-        public void AddPositivePlate()
-        {
-            LoadPositivePlate();
-        }
-
     }
 }
 
