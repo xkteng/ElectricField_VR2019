@@ -1,0 +1,12 @@
+{
+  "m_pairs": [
+    {
+      "m_key": "Cube",
+      "m_path": "Prefabs/Cube"
+    },
+    {
+      "m_key": "Sphere",
+      "m_path": "Prefabs/Sphere"
+    }
+  ]
+}
