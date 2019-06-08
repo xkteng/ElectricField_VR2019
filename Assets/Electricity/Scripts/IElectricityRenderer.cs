@@ -26,8 +26,7 @@ namespace Electricity
         /// <param name="delta">步进距离</param>
         /// <param name="max_Intensity">最大场强</param>
         /// <param name="min_Intensity">最小场强</param>
-        void CreateFieldLineRendersAroundPoints(IElectric[] eletrics, float distance, int times, float delta,
-            float max_Intensity, float min_Intensity);
+        void CreateFieldLineRendersAroundPoints(IElectric[] eletrics, float startDistance,float minDistance,float maxDistance, int times, float delta);
         /// <summary>
         /// 删除所有的渲染器
         /// </summary>
@@ -35,7 +34,7 @@ namespace Electricity
         /// <summary>
         /// 渲染一次
         /// </summary>
-        void RenderFieldLines(IntensityFunction i_func, PotentialFunction p_func);
+        void RenderFieldLines(IntensityFunction i_func);
 
         void Show();
         void Hide();
